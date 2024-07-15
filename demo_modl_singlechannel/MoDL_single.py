@@ -99,7 +99,9 @@ class UnrolledModel(nn.Module):
         image = zf_image 
         
         # Begin unrolled proximal gradient descent
-        for resnet in self.resnets:
+        for step, resnet in enumerate(self.resnets):
+            print(f'\t\tStep {step}/{len(self.resnets)}...')
+
             # dc update
             image = image.permute(0,3,1,2) 
 #             pl.ImagePlot(image.detach().cpu())
