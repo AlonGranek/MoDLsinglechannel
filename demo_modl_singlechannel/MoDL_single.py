@@ -69,7 +69,7 @@ class UnrolledModel(nn.Module):
 #             self.step_sizes = [torch.nn.Parameter(init_step_size) for i in range(num_grad_steps)] 
 
 
-    def forward(self, kspace, init_image=None, mask=None):
+    def forward(self, kspace, init_image=None, mask=None, return_steps: bool = False):
         """
         Args:
             kspace (torch.Tensor): Input tensor of shape [batch_size, height, width, time, num_coils, 2]
@@ -99,6 +99,7 @@ class UnrolledModel(nn.Module):
         image = zf_image 
         
         # Begin unrolled proximal gradient descent
+        images = list()
         for step, resnet in enumerate(self.resnets):
             print(f'\t\tStep {step}/{len(self.resnets)}...')
 
@@ -110,5 +111,10 @@ class UnrolledModel(nn.Module):
             rhs = zf_image + self.modl_lamda * image
             CG_alg = ConjGrad(Aop_fun=Sense.normal,b=rhs,verbose=False,l2lam=self.modl_lamda,max_iter=self.num_cg_steps)
             image = CG_alg.forward(rhs)
-        
-        return image
+
+            images.append(image)
+
+        if return_steps:
+            return image, images
+        else:
+            return image
