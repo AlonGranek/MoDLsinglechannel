@@ -43,7 +43,6 @@ class UnrolledModel(nn.Module):
     def __init__(self, params):
         """
         Args:
-            params (dict): Dictionary containing network parameters
         """
         super().__init__()
 

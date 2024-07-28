@@ -3,12 +3,51 @@ Copyright (c) Facebook, Inc. and its affiliates.
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 """
+"""
+Bank of sampling masks to choose
+"""
 
 import numpy as np
 import torch
+from sigpy.mri import poisson
+from typing import Tuple
 
 
-class MaskFunc:
+class MaskFuncGiven:
+    def __init__(self, mask: torch.Tensor):
+        """
+        Simply return the given mask.
+        This class exists for consistency with the other methods.
+        """
+        self.mask = mask
+
+    def __call__(self):
+        return self.mask
+
+
+class MaskFuncPoisson2D:
+    def __init__(
+            self,
+            image_shape: Tuple[int, int] = (372, 372),
+            accel: float = 6,
+            calib_shape: Tuple[int, int] = (56, 56)
+    ):
+        self.image_shape = image_shape
+        self.accel = accel
+        self.calib_shape = calib_shape
+
+    def __call__(self) -> torch.Tensor:
+        mask = poisson(
+            img_shape=self.image_shape,
+            accel=self.accel,  # 4,
+            calib=self.calib_shape,
+            dtype=float, crop_corner=True, return_density=False, seed=0, max_attempts=6, tol=0.1
+        )
+        mask_torch = torch.stack([torch.tensor(mask).float(), torch.tensor(mask).float()], dim=2)
+        return mask_torch
+
+
+class MaskFuncEquispacedLines:
     """
     MaskFunc creates a sub-sampling mask of a given shape.
     The mask selects a subset of columns from the input k-space data. If the k-space data has N
