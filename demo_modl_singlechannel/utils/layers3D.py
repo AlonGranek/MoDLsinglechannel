@@ -4,10 +4,9 @@ Implementations of different CNNs
 by Christopher M. Sandino (sandino@stanford.edu), 2019.
 
 """
-import sys
 import torch
 from torch import nn
-from utils.transforms import center_crop
+from MoDLsinglechannel.demo_modl_singlechannel.utils.transforms import center_crop
 
 
 class SeparableConv3d(nn.Module):

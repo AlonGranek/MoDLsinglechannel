@@ -37,11 +37,13 @@ def mul(x, y):
     return torch.stack((real, imag), dim=-1)
 
 
-def abs(x):
+def abs(x, dim: int = -1):
     """
     Computes the absolute value of a complex-valued input tensor (x).
+
+    :param dim:     Real/imag component dimension
     """
-    assert x.size(-1) == 2
+    assert x.size(dim) == 2
     return (x ** 2).sum(dim=-1).sqrt()
 
 

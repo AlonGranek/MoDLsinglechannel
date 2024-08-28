@@ -2,15 +2,16 @@ import logging
 from pathlib import Path
 import numpy as np
 import torch
-import sigpy as sp
 from torch.utils.data import DataLoader
-from utils import complex_utils as cplx
-from utils.datasets import SliceData
+from MoDLsinglechannel.demo_modl_singlechannel.utils import complex_utils as cplx
+from MoDLsinglechannel.demo_modl_singlechannel.utils.datasets import SliceData
 from typing import Callable
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+from MoDLsinglechannel.demo_modl_singlechannel.subsample_fastmri import SaveableMask
 
 
 class Namespace:
@@ -55,11 +56,11 @@ class DataTransform:
         return scale
 
 
-def create_data_loaders(args, mask_generator):
+def create_data_loaders(args, mask: SaveableMask):
     # Set up training data
     train_data = SliceData(
         root=Path(str(args.data_path)),
-        transform=DataTransform(mask_generator),
+        transform=DataTransform(mask.mask_generator),
         sample_rate=1
     )
     # Set up loader
@@ -70,6 +71,10 @@ def create_data_loaders(args, mask_generator):
         num_workers=8,
         pin_memory=True,
     )
+
+    # Include mask info
+    train_loader.MASK = mask.name
+
     return train_loader
 
 

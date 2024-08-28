@@ -10,7 +10,45 @@ Bank of sampling masks to choose
 import numpy as np
 import torch
 from sigpy.mri import poisson
-from typing import Tuple
+from typing import Tuple, Union, Callable
+from pathlib import Path
+
+from pickle import load, dump
+
+
+from uuid import uuid4
+
+
+"""
+With MoDL, appending MMSEs and an undersampling mask
+"""
+
+
+class SaveableMask:
+    def __init__(self, masks_dir: Union[Path, str], mask_generator: Callable = None):
+        self.masks_dir = Path(str(masks_dir))
+        self.name = None
+        self.mask_generator = mask_generator
+
+    def save(self, name: str = None):
+        assert self.mask_generator is not None, 'mask_generator should not be None'
+
+        self.masks_dir.mkdir(exist_ok=True)
+
+        # If saved name is None, set a UUID name
+        self.name = name if name is not None else str(uuid4())
+
+        path = self.masks_dir.joinpath(self.name + '.pkl')
+        with open(path, 'wb') as file:
+            dump(self.mask_generator, file)
+            print(f'Successfully saved mask generator in {path}')
+
+    def load(self, name: str):
+        self.name = name
+        path = self.masks_dir.joinpath(self.name + '.pkl')
+        with open(path, 'rb') as file:
+            self.mask_generator = load(file)
+            print(f'Successfully loaded mask generator from {path}')
 
 
 class MaskFuncGiven:

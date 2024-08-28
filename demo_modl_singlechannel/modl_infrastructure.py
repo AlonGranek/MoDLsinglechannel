@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import torch
 import torch.nn as nn
@@ -8,8 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Union
 
-from MoDL_single import UnrolledModel
-from utils import complex_utils as cplx
+from MoDLsinglechannel.demo_modl_singlechannel.MoDL_single import UnrolledModel
+from MoDLsinglechannel.demo_modl_singlechannel.utils import complex_utils as cplx
 from alon.fastmri_preprocess import ifftc, fftc
 
 import matplotlib.pyplot as plt
@@ -17,15 +15,31 @@ import matplotlib.pyplot as plt
 
 @dataclass
 class MoDLParams:
+    """ 8-step MoDL """
+    # data_path: Path = Path(
+    #     '/mnt/c/Users/along/brain_multicoil_train_batch_0/multicoil_train'
+    # )
+    # batch_size: int = 2 #2 #4
+    # num_grad_steps: int = 8     #5 #3 #8 #3        #4
+    # num_cg_steps: int = 8
+    # share_weights: int = True
+    # modl_lamda: int = 0.05
+    # lr: int = 1e-3 #1e-5 #1e-4
+    # weight_decay: int = 0
+    # lr_step_size: int = 500
+    # lr_gamma: int = 0.5
+    # epoch: int = 21
+
+    """ 4-step MoDL """
     data_path: Path = Path(
         '/mnt/c/Users/along/brain_multicoil_train_batch_0/multicoil_train'
     )
-    batch_size: int = 2 #2 #4
-    num_grad_steps: int = 8 #5 #3 #8 #3        #4
+    batch_size: int = 2     #2 #4
+    num_grad_steps: int = 4     #5 #3 #8 #3        #4
     num_cg_steps: int = 8
     share_weights: int = True
-    modl_lamda: int = 0.05
-    lr: int = 1e-3 #1e-5 #1e-4
+    modl_lamda: int = 0.01 #0.05
+    lr: int = 1e-4 #1e-5 #1e-4
     weight_decay: int = 0
     lr_step_size: int = 500
     lr_gamma: int = 0.5
@@ -38,7 +52,7 @@ def build_optim(args, params):
 
 
 class MoDLWrapper:
-    def __init__(self, modl_params: MoDLParams, save_dir: Path, device: str = 'cpu'):
+    def __init__(self, modl_params: MoDLParams, save_dir: Path, device: str = 'cpu', trained_model: UnrolledModel = None):
         """
         Handles the training and loading of MoDL.
 
@@ -49,7 +63,7 @@ class MoDLWrapper:
         self.device = device
         self.save_dir = save_dir
 
-        self.single_MoDL = UnrolledModel(self.modl_params).to(self.device)
+        self.single_MoDL = trained_model if trained_model is not None else  UnrolledModel(self.modl_params).to(self.device)
         self.optimizer = build_optim(self.modl_params, self.single_MoDL.parameters())
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, self.modl_params.lr_step_size,
                                                          self.modl_params.lr_gamma)
@@ -104,7 +118,8 @@ class MoDLWrapper:
                 self.optimizer.step()
 
                 # Training state display
-                avg_loss = 0.99 * avg_loss + 0.01 * loss.item() if iter > 0 else loss.item()
+                rate = 0.1
+                avg_loss = (1 - rate) * avg_loss + rate * loss.item() if iter > 0 else loss.item()
                 print(f'\tInstant loss: {loss.item()}. \t\tAvg loss: {avg_loss}')
 
                 if iter % save_freq == save_freq - 1:
@@ -116,7 +131,9 @@ class MoDLWrapper:
                             'params': self.modl_params,
                             'model': self.single_MoDL.state_dict(),
                             'optimizer': self.optimizer.state_dict(),
-                            'exp_dir': self.save_dir.__str__()
+                            'exp_dir': self.save_dir.__str__(),
+
+                            'MASK': data_loader.MASK,
                         },
                         f=self.save_dir.joinpath(f'Model {model_name}  epoch {epoch}.pt')
                     )

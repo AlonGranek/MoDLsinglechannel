@@ -29,10 +29,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
+
 from datasets import create_data_loaders
 from subsample_fastmri import SaveableMask
-from MoDLsinglechannel.demo_modl_singlechannel.modl_infrastructure import MoDLParams, MoDLWrapper
+from modl_infrastructure import MoDLParams, MoDLWrapper
+
 from alon.config import *
+
 
 # Load a mask
 #   Ask for a UUID, else take the most recently-created one
@@ -46,20 +49,35 @@ mask = SaveableMask(masks_dir=MASKS_DIR)
 mask.load(mask_name)
 
 
+""" Loading """
 modl_params = MoDLParams()
 modl_train_loader = create_data_loaders(modl_params, mask)
 modl_checkpoint_dir = Path('/home/alon_granek/PythonProjects/NPPC/alon/checkpoints2')
 modl_wrapper = MoDLWrapper(modl_params, modl_checkpoint_dir)
-# modl_wrapper.load(
-#     modl_checkpoint_dir,
-#     model_name='MoDL 4-step regul 0.01', #'Initial 4-step MoDL', #'test',
-#     epoch='last'
-# )
+
+single_MoDL = modl_wrapper.load(modl_checkpoint_dir,
+                                model_name='MoDL 4-step regul 0.01', #'Initial 4-step MoDL (2)', #'8-step MoDL', #'test',
+                                epoch='last')
 
 
+from MoDLsinglechannel.demo_modl_singlechannel.nppc_infrastructure import NPPCParams, NPPCForMoDLWrapper
 
-""" Training """
-modl_wrapper.train(modl_train_loader, model_name='MoDL 4-step regul 0.01') #model_name='Initial 4-step MoDL (2)') #save_dir = ....)
+nppc_params = NPPCParams(
+    dc_loss_lambda=0, #20e0, #5e0, #8e0,
+#    n_dirs=8,
+
+    #5e0, #0
+    # dc_loss_lambda=0, #5e0, #0
+)
+nppc_checkpoint_dir = Path('/home/alon_granek/PythonProjects/NPPC/alon/nppc_checkpoints')
+nppc_wrapper = NPPCForMoDLWrapper(nppc_params, single_MoDL, save_dir=nppc_checkpoint_dir)
 
 
+# """ MERE ATTEMPT IN END-TO-END NPPC """
+# nppc_wrapper.train(modl_train_loader, nppc_position=0, last_pos=-1, model_name=f'modl_nppc_dc END-TO-END DC test')
+# """"""
+
+""" DUAL-CHANNEL END-TO-END NPPC """
+nppc_wrapper.train(modl_train_loader, nppc_position=0, last_pos=-1, model_name=f'modl_nppc_dc DUAL AlterProj')
+""""""
 

@@ -4,16 +4,14 @@ by Ke Wang (kewang@berkeley.edu), 2020.
 
 """
 
-import os, sys
 import torch
 from torch import nn
-import sigpy.plot as pl
-import utils.complex_utils as cplx
-from utils.transforms import SenseModel,SenseModel_single
-from utils.layers3D import ResNet
-from unet.unet_model import UNet
-from utils.flare_utils import ConjGrad
-import matplotlib
+import MoDLsinglechannel.demo_modl_singlechannel.utils.complex_utils as cplx
+from MoDLsinglechannel.demo_modl_singlechannel.utils.transforms import SenseModel_single
+from MoDLsinglechannel.demo_modl_singlechannel.unet.unet_model import UNet
+from MoDLsinglechannel.demo_modl_singlechannel.utils.flare_utils import ConjGrad
+
+
 # matplotlib.use('TkAgg')
 
 class Operator(torch.nn.Module):
@@ -98,7 +96,7 @@ class UnrolledModel(nn.Module):
         image = zf_image 
         
         # Begin unrolled proximal gradient descent
-        images = list()
+        images = [image]
         for step, resnet in enumerate(self.resnets):
             print(f'\t\tStep {step}/{len(self.resnets)}...')
 
