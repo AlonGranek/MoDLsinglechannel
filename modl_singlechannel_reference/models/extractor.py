@@ -139,7 +139,7 @@ class ViTExtractor:
     @staticmethod
     def patch_vit_resolution(model: nn.Module, stride: int) -> nn.Module:
         """
-        change resolution of model output by changing the stride of the patch extraction.
+        change resolution of model dataset by changing the stride of the patch extraction.
         :param model: the model to change resolution for.
         :param stride: the new stride parameter.
         :return: the adjusted model

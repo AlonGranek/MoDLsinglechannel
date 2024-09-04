@@ -8,10 +8,9 @@ LICENSE file in the root directory of this source tree.
 import pathlib
 import random
 
-import h5py
 import numpy as np
 from torch.utils.data import Dataset
-from alon.fastmri_preprocess import fftc, resize_image
+from modl_nppc_chain.chain_utils.fastmri_preprocess import fftc, resize_image
 
 
 class SliceData(Dataset):
@@ -57,7 +56,7 @@ class SliceData(Dataset):
     #         target = data['reconstruction'][slice]
     #         # target = data['reconstruction_rss'][slice]
     #
-    #         #todo By alon: Perhaps do the processing here
+    #         #todo By modl_nppc_chain: Perhaps do the processing here
     #
     #         return self.transform(kspace,target,slice)
 

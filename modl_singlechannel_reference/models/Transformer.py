@@ -306,7 +306,7 @@ class CustomDecoder(nn.Module):
             nn.Conv2d(32, 16, kernel_size=3, padding=1),                       # Output: (batch, 16, 172, 108)
             nn.ReLU(),
             nn.Conv2d(16, 2, kernel_size=3, padding=1),                        # Output: (batch, 2, 172, 108)
-            nn.Sigmoid()  # Assuming you want output in the range [0, 1]
+            nn.Sigmoid()  # Assuming you want dataset in the range [0, 1]
         )
 
     def forward(self, x):

@@ -210,7 +210,7 @@ class VisionTransformer(nn.Module):
 
     def get_intermediate_layers(self, x, n=1):
         x = self.prepare_tokens(x)
-        # we return the output tokens from the `n` last blocks
+        # we return the dataset tokens from the `n` last blocks
         output = []
         for i, blk in enumerate(self.blocks):
             x = blk(x)

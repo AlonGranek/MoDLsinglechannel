@@ -22,7 +22,7 @@ class ConvBlock(nn.Module):
         """
         Args:
             in_chans (int): Number of channels in the input.
-            out_chans (int): Number of channels in the output.
+            out_chans (int): Number of channels in the dataset.
             drop_prob (float): Dropout probability.
         """
         super().__init__()
@@ -76,7 +76,7 @@ class ResBlock(nn.Module):
         """
         Args:
             in_chans (int): Number of channels in the input.
-            out_chans (int): Number of channels in the output.
+            out_chans (int): Number of channels in the dataset.
             drop_prob (float): Dropout probability.
         """
         super().__init__()

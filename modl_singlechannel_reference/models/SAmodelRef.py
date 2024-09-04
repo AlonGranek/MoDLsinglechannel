@@ -52,7 +52,7 @@ class ConvDecoder(nn.Module):
         self.num_patches = (img_height // patch_size) * (img_width // patch_size)
         self.avg_pool = nn.AvgPool2d(kernel_size=patch_size, stride=16)
 
-        # Ensure stride and padding are set correctly to match the output size
+        # Ensure stride and padding are set correctly to match the dataset size
         self.deconv = nn.Sequential(
             nn.ConvTranspose2d(embed_dim, embed_dim // 2, kernel_size=patch_size, stride=patch_size, padding=0),
             nn.ReLU(),

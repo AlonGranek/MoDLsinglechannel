@@ -8,7 +8,7 @@ from typing import Union
 
 from MoDLsinglechannel.demo_modl_singlechannel.MoDL_single import UnrolledModel
 from MoDLsinglechannel.demo_modl_singlechannel.utils import complex_utils as cplx
-from alon.fastmri_preprocess import ifftc, fftc
+from modl_nppc_chain.chain_utils.fastmri_preprocess import ifftc, fftc
 
 import matplotlib.pyplot as plt
 

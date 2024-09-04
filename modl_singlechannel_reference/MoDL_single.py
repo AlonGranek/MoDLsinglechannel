@@ -112,7 +112,7 @@ class UnrolledModel(nn.Module):
             #image = image.permute(0,2,3,1)
 
             #print(image.shape)
-            # Combine the output of ResNet with the reference image
+            # Combine the dataset of ResNet with the reference image
             if (self.reference_mode == 1):
                 combined_input = torch.cat([image, reference_image], dim=3)  # Concatenate along the channel dimension
                 #print(combined_input.shape)

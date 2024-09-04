@@ -304,7 +304,7 @@ def center_crop(data, shape):
 
     Args:
         data (torch.Tensor): The input tensor to be center cropped. 
-        shape (list of ints): The output shape. If shape[dim] = -1, then no crop 
+        shape (list of ints): The dataset shape. If shape[dim] = -1, then no crop
             will be applied in that dimension.
     """
     for i in range(len(shape)):

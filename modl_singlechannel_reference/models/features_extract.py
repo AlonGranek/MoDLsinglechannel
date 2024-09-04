@@ -16,7 +16,7 @@ def deep_features(image_tensor, extractor, layer, facet, bin: bool = False, incl
 
     # images to deep_features.
     # input is a tensor of size batch X height X width,
-    # output is size: batch X 1 X height/patchsize * width/patchsize X deep_features size
+    # dataset is size: batch X 1 X height/patchsize * width/patchsize X deep_features size
     deep_features = extractor.extract_descriptors(image_tensor.to(device), layer, facet, bin, include_cls).cpu().numpy()
 
     # batch X height/patchsize * width/patchsize X deep_features size

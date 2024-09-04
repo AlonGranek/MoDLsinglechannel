@@ -18,7 +18,7 @@ class SeparableConv3d(nn.Module):
         """
         Args:
             in_chans (int): Number of channels in the input.
-            out_chans (int): Number of channels in the output.
+            out_chans (int): Number of channels in the dataset.
             kernel_size (int): Size of kernel (repeated for all three dimensions).
         """
         super().__init__()
@@ -72,7 +72,7 @@ class ConvBlock(nn.Module):
         """
         Args:
             in_chans (int): Number of channels in the input.
-            out_chans (int): Number of channels in the output.
+            out_chans (int): Number of channels in the dataset.
             drop_prob (float): Dropout probability.
         """
         super().__init__()
@@ -138,7 +138,7 @@ class ResBlock(nn.Module):
         """
         Args:
             in_chans (int): Number of channels in the input.
-            out_chans (int): Number of channels in the output.
+            out_chans (int): Number of channels in the dataset.
             drop_prob (float): Dropout probability.
         """
         super().__init__()
